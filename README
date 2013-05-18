@@ -1,0 +1,327 @@
+This README file contains information on building the meta-minnow BSP
+layer and booting the images contained in the /binary directory.  Please
+see the corresponding sections below for details.
+
+For more information on the Minnow board see:
+http://www.minnowboard.org
+
+The MinnowBoard is an Intel Atom E640T processor coupled with an Intel
+EG20T Platform Controller Hub (Tunnel Creek + Topcliff = Queens Bay).
+The E6xx CPU embeds on-chip graphics supported by the Intel Embedded
+Media and Graphics Driver (EMGD). The board targets the small and
+low-cost embedded market for the developer and maker community. Details
+on the Queens Bay platform can be found here:
+
+  http://www.intel.com/content/www/us/en/intelligent-systems/queens-bay/embedded-intel-atom-e6xx-series-with-intel-platform-controller-hub-eg20t.html
+
+Information on all Intel embedded platforms can be found here:
+
+  http://www.intel.com/p/en_US/embedded/hwsw/hardware
+
+
+Compliance
+==========
+
+This BSP is compliant with the Yocto Project as per the requirements
+listed here:
+
+  http://www.yoctoproject.org/yocto-project-compatible-registration
+
+
+Dependencies
+============
+
+This layer depends on:
+
+  URI: git://git.openembedded.org/bitbake
+  branch: master
+
+  URI: git://git.openembedded.org/openembedded-core
+  layers: meta
+  branch: danny
+
+  URI: git://git.yoctoproject.org/meta-intel
+  layers: meta-intel
+  branch: danny
+
+
+Patches
+=======
+
+The MinnowBoard BSP is dependent on the meta-intel BSP, but maintained
+separately in order to allot it the freedom necessary to meet the needs
+of the growing community. Because of its close ties to the meta-intel
+layer, development of the MinnowBoard BSP will be done alongside
+meta-intel.
+
+Please submit any patches against this BSP to the meta-intel mailing list:
+
+  https://lists.yoctoproject.org/listinfo/meta-intel
+
+Please include a "minnowboard:" prefix in your email subject and be sure to Cc
+the maintainer.
+
+  Maintainer: Darren Hart <dvhart@linux.intel.com>
+
+
+Table of Contents
+=================
+
+  I. Building the meta-minnow BSP layer
+ II. Booting the images in /binary
+III. EFI Boot Targets
+ IV. Device Notes
+     a. Serial Port
+     b. HDMI
+     c. GPIO
+     d. Expansion Connector
+ IV. Issue Tracking
+  V. Additional Resources
+
+
+I. Building the meta-minnow BSP layer
+=====================================
+
+To build an image with BSP support for a given release, you need to
+download the corresponding BSP tarball from the 'Board Support Package
+(BSP) Downloads' page of the Yocto Project website.  Alternatively, you
+can work from the git repositories, ensuring you are using the same
+branch, e.g. danny, for each.
+
+Then add the meta-intel and meta-minnow layers to your bblayers.conf:
+
+BBLAYERS += "/path/to/meta-intel"
+BBLAYERS += "/path/to/meta-minnow"
+
+Update your local.conf to specify the MACHINE as "minnow" and allow for
+building the emgd-driver-bin package by white-listing the EMGD license:
+
+  MACHINE ?= "minnow"
+  LICENSE_FLAGS_WHITELIST = "license_emgd-driver-bin"
+
+The 'minnow' machine will include support for hardware video
+acceleration via gstreamer if and only if the "commercial" string is
+added to the the LICENSE_FLAGS_WHITELIST variable in your local.conf:
+
+  LICENSE_FLAGS_WHITELIST = "license_emgd-driver-bin commercial"
+
+This is required to prevent the resulting image from including anything
+that might violate the license terms of the packages used to implement
+the video acceleration feature, such as gst-ffmpeg and ffmpeg. As
+always, please consult the licenses included in the specific packages
+for details if you use packages that require particular LICENSE_FLAGS.
+
+Due to a bug in ISO generation when building for EFI-only machines, it
+is necessary to include the following in your local.conf:
+
+  NOISO = "1"
+
+You can now configure your build directory and build an image:
+
+  $ source oe-init-build-env
+  $ bitbake core-image-sato
+
+At the end of a successful build, you will have a live image that you
+can boot from a USB flash drive (see instructions on how to do that
+below, in the section 'Booting the images from /binary').
+
+
+II. Booting the images in /binary
+=================================
+
+This BSP contains (or builds) live images which must be converted to a
+partitioned image format in order to boot them on the MinnowBoard.
+
+You can deploy the hddimg image to a USB, SD, or SATA device. You will
+need to know the device name on your host as well as the device name on
+the target. Be careful with this step as using the wrong host device can
+result in overwriting data on your host machine.
+
+Under Linux, USB and SATA devices typically appears as /dev/sdb,
+/dev/sdc, etc., while SD devices may appear as one of those or as
+/dev/mmcblk0, /dev/mmcblk1, etc. Watching your system messages as you
+connect the device will tell you exactly which device name is assigned
+to the device. On the MinnowBoard, assuming only one storage device is
+attached at boot, a USB or SATA device will be /dev/sda and an SD device
+will be /dev/mmcblk0.
+
+After inserting the boot media into your host machine and determining
+your host and target device, create the image using the mkefidisk.sh
+script, provided with the BSP under scripts/. Note that root privileges
+are required. For example, using an SD card which appears as /dev/sdc on
+the host:
+
+$ sudo mkefidisk.sh /dev/sdc core-image-sato-minnow.hddimg /dev/mmcblk0
+
+Follow the prompts on the screen to confirm the action.
+
+Insert the device into the MinnowBoard and power on. This should result
+in a system booted to the Sato graphical desktop. If your system drops
+into an EFI shell instead of booting the image, see the section 'EFI
+Boot Targets'.
+
+The root password is empty on the Poky reference distribution images.
+
+
+III. EFI Boot Targets
+=====================
+
+The MinnowBoard EFI firmware supports FastBoot which optimizes the
+device initialization for a specific boot path. Out of the box, the
+board will boot from the default bootloader on the SD card. If you
+modify this card or want to boot from a different device, you will need
+to reestablish the automatic boot path.
+
+Ensure the devices, and only the devices, you intend to boot from are
+installed. Select the Shell from the EFI boot menu, or allow it to
+timeout and start the shell automatically.  From within the shell,
+initialize all the devices with:
+
+> connect -r
+> map -r
+
+This will result in a listing of file-systems and block devices similar
+to the following:
+
+Mapping table
+      FS0: Alias(s):HD21a0b:;BLK1:
+          PciRoot(0x0)/Pci(0x17,0x0)/Pci(0x0,0x0)/Pci(0x8,0x3)/USB(0x0,0x0)/HD(1,MBR,0x00056299,0x800,0x9000)
+     BLK0: Alias(s):
+          PciRoot(0x0)/Pci(0x17,0x0)/Pci(0x0,0x0)/Pci(0x8,0x3)/USB(0x0,0x0)
+     BLK2: Alias(s):
+          PciRoot(0x0)/Pci(0x17,0x0)/Pci(0x0,0x0)/Pci(0x8,0x3)/USB(0x0,0x0)/HD(2,MBR,0x00056299,0x9800,0x70D000)
+     BLK3: Alias(s):
+          PciRoot(0x0)/Pci(0x17,0x0)/Pci(0x0,0x0)/Pci(0x8,0x3)/USB(0x0,0x0)/HD(3,MBR,0x00056299,0x716800,0x5F000)
+
+Note that FS0: is a file-system on a USB device. To automatically boot
+the bootia32.efi bootloader on this device, enter:
+
+> bcfg boot add 0 fs0:\efi\boot\bootia32.efi "Default Boot"
+> reset
+
+From now on, so long as that device remains connected and at that path,
+the firmware will boot it directly, skipping the boot menu and the EFI
+shell.
+
+
+IV. Device Notes
+================================
+a. Serial Port
+--------------
+UART0 from the EG20T is connected to an FTDI UART-to-USB device which
+appears as a serial port on the host computer.
+
+When you power on your MinnowBoard, your Linux host will discover a
+serial device and name it /dev/ttyUSB0 (or similar). You can communicate
+with this device at 115200 8N1 using your preferred terminal emulator.
+For example:
+
+  $ screen /dev/ttyUSB0 115200
+
+b. Video
+-------
+The on-board HDMI port is technically a DVI signal driven by the sDVO
+port. It supports resolutions up to 1920x1080. The LVDS lines are
+available on the expansion connector.
+
+c. GPIO
+-------
+The MinnowBoard provides a variety of GPIO, some with a dedicated
+purpose. To get a listing, be sure the minnowboard-gpio and
+minnowboard-keys drivers are loaded (they are by default). The purpose
+of each line is available via debugfs:
+
+$ mkdir /debug
+$ mount none -t debugfs /debug
+$ cat /debug/gpio
+GPIOs 0-4, platform/sch_gpio.33158, sch_gpio_core:
+ gpio-0   (minnow_btn0         ) in  hi
+ gpio-1   (minnow_btn1         ) in  hi
+ gpio-2   (minnow_btn2         ) in  hi
+ gpio-3   (minnow_btn3         ) in  hi
+
+GPIOs 5-13, platform/sch_gpio.33158, sch_gpio_resume:
+ gpio-5   (minnow_gpio_aux0    ) in  hi
+ gpio-6   (minnow_gpio_aux1    ) in  lo
+ gpio-7   (minnow_gpio_aux2    ) in  lo
+ gpio-8   (minnow_gpio_aux3    ) in  hi
+ gpio-9   (minnow_gpio_aux4    ) in  hi
+ gpio-10  (minnow_led0         ) out lo
+ gpio-11  (minnow_led1         ) out lo
+ gpio-13  (minnow_phy_reset    ) out hi
+
+GPIOs 244-255, pci/0000:02:00.2, 0000:02:00.2:
+ gpio-244 (minnow_gpio_pch0    ) in  hi
+ gpio-245 (minnow_gpio_pch1    ) in  hi
+ gpio-246 (minnow_gpio_pch2    ) in  hi
+ gpio-247 (minnow_gpio_pch3    ) in  hi
+ gpio-248 (minnow_gpio_pch4    ) in  hi
+ gpio-249 (minnow_gpio_pch5    ) in  hi
+ gpio-250 (minnow_gpio_pch6    ) in  hi
+ gpio-251 (minnow_gpio_pch7    ) in  hi
+ gpio-252 (minnow_gpio_hwid0   ) in  hi
+ gpio-253 (minnow_gpio_hwid1   ) in  lo
+ gpio-254 (minnow_gpio_hwid2   ) in  lo
+ gpio-255 (minnow_lvds_detect  ) in  lo
+
+The minnowboard-keys driver maps GPIO 0-3 to the arrow keys via the
+gpio-keys-polled driver. These can be used as a four button keyboard.
+
+The auxiliary GPIO lines (5-9) are only available if the LVDS_DETECT
+line is low. For the time being, these lines should be considered LVDS
+lines only and not used for another purpose. Future Linux kernel driver
+updates should make these lines available as GPIO if LVDS is not in use.
+
+WARNING: Forcing lines 5-9 to inputs and driving them externally may
+         result in physical damage to the board.
+
+GPIO 10 and 11 are mapped to the two user LEDs on the MinnowBoard. By
+default LED0 uses the heartbeat LED trigger (it should blink by default)
+and LED1 uses the mmc0 trigger and should blink indicating SD card
+activity. These can be changed using the /sys/class/led interface.
+
+GPIO 13 is dedicated to a physical reset of the Ethernet PHY and is used
+by the minnowboard platform driver.
+
+GPIO 244-251 are exported over the expansion connector and can be
+configured as inputs or outputs. Experimenters can use the simple
+/sys/class/gpio interface. To write your own Linux kernel driver using
+these GPIOs, remove the minnowboard-gpio driver and the lines will be
+available to request by your new driver. See the Linux kernel GPIO
+documentation for more information on the GPIO subsystem.
+
+GPIO 252-254 are a three-bit integer representing the hardware ID of the
+board. This is displayed at boot from the minnowboard driver:
+
+  MinnowBoard: Hardware ID: 1
+
+Finally, GPIO 255 indicates if LVDS is being used on a daughter card
+(lure). The line is available on the expansion connector. Lures
+providing LVDS should assert this line to ensure GPIO 5-9 are reserved
+for LVDS control signals. When asserted, GPIO 5-9 are not exported by
+	the minnowboard-gpio driver. 
+
+d. Expansion Connector
+----------------------
+For details and specifications of the expansion connector and the
+creation of daughter cards (lures), please see the elinux wiki:
+
+http://www.elinux.org/Minnowboard:Expansion_Interfaces
+
+IV. Issue Tracking
+==================
+The MinnowBoard BSP uses the Yocto Project Bugzilla for issue tracking. Please
+search the Bugzilla before opening new bugs. The following query lists all open
+bugs:
+https://bugzilla.yoctoproject.org/buglist.cgi?list_id=38325&query_format=advanced&bug_status=NEW&bug_status=ACCEPTED&bug_status=IN%20PROGRESS%20DESIGN&bug_status=IN%20PROGRESS%20DESIGN%20COMPLETE&bug_status=IN%20PROGRESS%20IMPLEMENTATION&bug_status=IN%20PROGRESS%20REVIEW&bug_status=REOPENED&bug_status=NEEDINFO&bug_status=WaitForUpstream&component=bsps-meta-minnow
+
+To file a new bug, use this link:
+https://bugzilla.yoctoproject.org/enter_bug.cgi?product=BSPs&component=bsps-meta-minnow
+
+V. Additional Resources
+=======================
+In addition to this README, please see the following URLs for details
+and additional documentation:
+
+http://www.minnowboard.org/
+http://www.elinux.org/MinnowBoard
