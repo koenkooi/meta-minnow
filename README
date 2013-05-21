@@ -121,6 +121,21 @@ You can now configure your build directory and build an image:
   $ source oe-init-build-env
   $ bitbake core-image-sato
 
+To build the Angstrom distribution, see the online documentation:
+
+  http://www.angstrom-distribution.org/building-angstrom
+
+The process can be summarized in the following steps:
+
+  $ git clone git://github.com/Angstrom-distribution/setup-scripts.git
+  $ cd setup-scripts
+  $ MACHINE=minnow ./oebb.sh config minnow
+
+  Edit conf/local.conf per the instructions provided above.
+
+  $ MACHINE=minnow ./oebb.sh update
+  $ MACHINE=minnow ./oebb.sh bitbake systemd-gnome-image
+
 At the end of a successful build, you will have a live image that you
 can boot from a USB flash drive (see instructions on how to do that
 below, in the section 'Booting the images from /binary').
