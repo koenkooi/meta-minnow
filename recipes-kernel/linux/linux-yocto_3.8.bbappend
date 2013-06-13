@@ -14,7 +14,7 @@ SRC_URI_minnow = "git://git.yoctoproject.org/linux-yocto-3.8;protocol=git;nochec
            file://media.cfg"
 
 SRCREV_machine_pn-linux-yocto_minnow ?= "4afed227ab8d84c7eaf222cad85e8232e4ea9cb0"
-SRCREV_meta_pn-linux-yocto_minnow ?= "ad45d1d36de36b42cb8a3a8b34752a9b26ce6a68"
+SRCREV_meta_pn-linux-yocto_minnow ?= "c0851dfb8535635e1e31d4a5146d3f021e30506c"
 SRCREV_emgd_pn-linux-yocto_minnow ?= "caea08c988e0f41103bbe18eafca20348f95da02"
 
 # Autoload modules for on-board hardware
