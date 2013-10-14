@@ -10,7 +10,7 @@ KERNEL_FEATURES_minnow_append = " features/drm-emgd/drm-emgd-1.18 \
                                   features/netfilter/netfilter.scc \
                                   features/usb-net/usb-net.scc"
 
-SRC_URI_minnow = "git://git.yoctoproject.org/linux-yocto-3.8;protocol=git;nocheckout=1;branch=${KBRANCH},${KMETA},emgd-1.18;name=machine,meta,emgd \
+SRC_URI_minnow = "git://git.yoctoproject.org/linux-yocto-3.8.git;protocol=git;nocheckout=1;branch=${KBRANCH},${KMETA},emgd-1.18;name=machine,meta,emgd \
            file://media.cfg"
 
 SRCREV_machine_pn-linux-yocto_minnow ?= "4afed227ab8d84c7eaf222cad85e8232e4ea9cb0"
