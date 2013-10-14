@@ -4,7 +4,7 @@ KBRANCH_DEFAULT = "standard/minnow"
 KBRANCH = "${KBRANCH_DEFAULT}"
 KMETA = "meta"
 
-SRC_URI = "git://git.yoctoproject.org/linux-yocto-3.8;protocol=git;nocheckout=1;branch=${KBRANCH},${KMETA},emgd-1.16;name=machine,meta,emgd \
+SRC_URI = "git://git.yoctoproject.org/linux-yocto-3.8.git;protocol=git;nocheckout=1;branch=${KBRANCH},${KMETA},emgd-1.16;name=machine,meta,emgd \
            file://media.cfg \
            file://staging.cfg"
 
