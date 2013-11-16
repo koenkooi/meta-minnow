@@ -8,7 +8,11 @@ COMPATIBLE_MACHINE_minnow = "minnow"
 KMACHINE_minnow  = "minnow"
 KERNEL_FEATURES_minnow_append = " features/drm-emgd/drm-emgd-1.18 \
                                   features/netfilter/netfilter.scc \
-                                  features/usb-net/usb-net.scc"
+                                  features/usb-net/usb-net.scc \
+                                  features/iwlwifi/iwlwifi.scc \
+                                  features/iwlegacy/iwlegacy.scc \
+                                  features/iwlegacy/iwlagn.scc \
+                                "
 
 SRC_URI_minnow = "git://git.yoctoproject.org/linux-yocto-3.8.git;protocol=git;nocheckout=1;branch=${KBRANCH},${KMETA},emgd-1.18;name=machine,meta,emgd \
            file://media.cfg"
