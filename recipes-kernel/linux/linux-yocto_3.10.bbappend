@@ -1,5 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
+PACKAGE_ARCH_minnow = "${MACHINE_ARCH}"
+
 LINUX_VERSION = "3.10.25"
 
 KBRANCH_minnow = "standard/base"
