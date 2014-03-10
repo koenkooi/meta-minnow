@@ -2,4 +2,3 @@
 # the LVDS as secondary to enable daughter cards adding the second display.
 THISDIR := "${@os.path.dirname(bb.data.getVar('FILE', d, True))}"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-PRINC := "${@int(PRINC) + 2}"
