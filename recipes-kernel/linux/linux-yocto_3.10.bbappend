@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 PACKAGE_ARCH_minnow = "${MACHINE_ARCH}"
 
-LINUX_VERSION = "3.10.25"
+LINUX_VERSION = "3.10.32"
 
 KBRANCH_minnow = "standard/base"
 
@@ -20,9 +20,9 @@ KERNEL_FEATURES_minnow_append = " features/drm-emgd/drm-emgd-1.18 \
 SRC_URI_minnow = "git://git.yoctoproject.org/linux-yocto-3.10;protocol=git;nocheckout=1;branch=${KBRANCH},${KMETA},emgd-1.18;name=machine,meta,emgd"
 
 
-SRCREV_machine_pn-linux-yocto_minnow ?= "79af968f2f26378798aec7a6d729ff5a371aae5f"
-SRCREV_meta_pn-linux-yocto_minnow ?= "4d658aa580df62232a4a84957b02496436dc17c4"
-SRCREV_emgd_pn-linux-yocto_minnow ?= "39c44dd7838bfd228938219cdb21ca30c4d0cbbf"
+SRCREV_machine_pn-linux-yocto_minnow ?= "78afd3095c9b37efbbfbfdc25eb3833ef3c6a718"
+SRCREV_meta_pn-linux-yocto_minnow ?= "6e0e756d51372c8b176c5d1e6f786545bceed351"
+SRCREV_emgd_pn-linux-yocto_minnow ?= "42d5e4548e8e79e094fa8697949eed4cf6af00a3"
 
 # Autoload modules for on-board hardware
 module_autoload_snd_hda_intel = "snd_hda_intel"
