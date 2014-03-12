@@ -38,11 +38,11 @@ This layer depends on:
 
   URI: git://git.openembedded.org/openembedded-core
   layers: meta
-  branch: danny
+  branch: dora
 
   URI: git://git.yoctoproject.org/meta-intel
   layers: meta-intel
-  branch: danny
+  branch: dora
 
 
 Patches
@@ -86,7 +86,7 @@ To build an image with BSP support for a given release, you need to
 download the corresponding BSP tarball from the 'Board Support Package
 (BSP) Downloads' page of the Yocto Project website.  Alternatively, you
 can work from the git repositories, ensuring you are using the same
-branch, e.g. danny, for each.
+branch, e.g. dora, for each.
 
 Then add the meta-intel and meta-minnow layers to your bblayers.conf:
 
