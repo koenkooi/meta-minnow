@@ -8,7 +8,7 @@ KBRANCH_minnow = "standard/base"
 
 COMPATIBLE_MACHINE_minnow = "minnow"
 KMACHINE_minnow  = "minnow"
-KERNEL_FEATURES_minnow_append = " features/drm-emgd/drm-emgd-1.18 \
+KERNEL_FEATURES_append_minnow = " features/drm-emgd/drm-emgd-1.18 \
                                   features/netfilter/netfilter.scc \
                                   features/usb-net/usb-net.scc \
                                   features/wifi/wifi-all.scc \
