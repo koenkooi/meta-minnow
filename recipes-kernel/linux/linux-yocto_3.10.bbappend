@@ -23,8 +23,6 @@ SRCREV_meta_pn-linux-yocto_minnow ?= "7df9ef8ee47dc9023044614210f4c1d9d916dd5f"
 SRCREV_emgd_pn-linux-yocto_minnow ?= "42d5e4548e8e79e094fa8697949eed4cf6af00a3"
 
 # Autoload modules for on-board hardware
-module_autoload_snd_hda_intel = "snd_hda_intel"
-module_autoload_pch_gbe = "pch_gbe"
-module_autoload_minnowboard = "minnowboard"
-module_autoload_minnowboard-gpio = "minnowboard-gpio"
-module_autoload_minnowboard-keys = "minnowboard-keys"
+KERNEL_MODULE_AUTOLOAD_minnow += "snd_hda_intel"
+KERNEL_MODULE_AUTOLOAD_minnow += "pch_gbe"
+KERNEL_MODULE_AUTOLOAD_minnow += "minnowboard minnowboard-gpio minnowboard-keys"
