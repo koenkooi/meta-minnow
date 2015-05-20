@@ -1,3 +1,10 @@
+
+*****
+NOTE: This BSP layer is for the original MinnowBoard
+      For the MinnowBoard MAX, please use the meta-intel intel-corei7-64 BSP
+      See: http://www.elinux.org/Minnowboard:MinnowMaxYoctoProject
+*****
+
 This README file contains information on building the meta-minnow BSP
 layer and booting the images contained in the /binary directory.  Please
 see the corresponding sections below for details.
